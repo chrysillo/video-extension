@@ -1,0 +1,6 @@
+/* Instagram crops videos to fill the post's frame. Fit the whole video
+   inside the frame instead, with black bars where it doesn't fill it. */
+video {
+  object-fit: contain !important;
+  background-color: #000 !important;
+}
