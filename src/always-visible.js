@@ -1,6 +1,6 @@
-// Stops the feed refreshing itself (and jumping to the top) when you come
-// back to the tab. Facebook decides to refresh after the tab has been
-// hidden for a while, so the page is told the tab never stops being visible.
+// Tells the page its tab never stops being visible. Sites check this to
+// pause videos in background tabs (Instagram) or to refresh the feed when
+// you come back (Facebook).
 (() => {
   'use strict';
 
@@ -20,9 +20,11 @@
     });
   }
 
-  // The event is dispatched on document, so a capture listener on window
-  // runs before any of Facebook's own listeners and can swallow it.
-  for (const type of ['visibilitychange', 'webkitvisibilitychange']) {
+  // These are dispatched on document, so a capture listener on window runs
+  // before any of the page's own listeners and can swallow them. "freeze"
+  // and "resume" fire when the browser suspends a background tab and wakes
+  // it up again.
+  for (const type of ['visibilitychange', 'webkitvisibilitychange', 'freeze', 'resume']) {
     window.addEventListener(type, (e) => e.stopImmediatePropagation(), true);
   }
 })();

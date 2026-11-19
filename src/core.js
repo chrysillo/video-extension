@@ -32,49 +32,72 @@ const NoVideoLoop = (() => {
   };
 
   // ---- Boolean attributes that are forced off ------------------------------
-  const blockedAttributes = new Set();
+  // Each blocked attribute maps to the elements the user has switched it on
+  // for (e.g. with the loop button). Everywhere else it stays off, whatever
+  // the page tries.
+  const blockedAttributes = new Map();
+  const nativeSetters = new Map();
+
+  const isAllowedOn = (media, name) => blockedAttributes.get(name).has(media);
 
   const origSetAttribute = Element.prototype.setAttribute;
   Element.prototype.setAttribute = function (name, value) {
-    if (isMedia(this) && blockedAttributes.has(String(name).toLowerCase())) return;
+    const lower = String(name).toLowerCase();
+    if (isMedia(this) && blockedAttributes.has(lower) && !isAllowedOn(this, lower)) return;
     return origSetAttribute.call(this, name, value);
   };
 
-  const stripBlockedAttributes = (node) => {
-    if (!(node instanceof Element)) return;
-    const media = isMedia(node) ? [node] : node.querySelectorAll('video, audio');
-    for (const m of media) {
-      for (const name of blockedAttributes) m.removeAttribute(name);
+  // Put each blocked attribute back to what the user chose for this element.
+  const syncAttributes = (media) => {
+    for (const name of blockedAttributes.keys()) {
+      const wanted = isAllowedOn(media, name);
+      if (media.hasAttribute(name) !== wanted) nativeSetters.get(name).call(media, wanted);
     }
+  };
+
+  const syncTree = (node) => {
+    if (!(node instanceof Element)) return;
+    if (isMedia(node)) syncAttributes(node);
+    else node.querySelectorAll('video, audio').forEach(syncAttributes);
   };
 
   // Catches attributes that arrive in parsed HTML or bypass setAttribute.
   const attributeObserver = new MutationObserver((mutations) => {
     for (const m of mutations) {
-      if (m.type === 'attributes') stripBlockedAttributes(m.target);
-      else m.addedNodes.forEach(stripBlockedAttributes);
+      if (m.type === 'attributes') syncTree(m.target);
+      else m.addedNodes.forEach(syncTree);
     }
   });
 
-  // Make the `name` property always read false and the attribute impossible to set.
+  // Switch a blocked attribute on or off for one element at the user's request.
+  const setAllowed = (media, name, on) => {
+    const allowed = blockedAttributes.get(name);
+    if (on) allowed.add(media);
+    else allowed.delete(media);
+    syncAttributes(media);
+  };
+
+  // Stop the page setting `name`: the property and attribute stay off
+  // unless the user has switched them on for that element.
   const blockMediaAttribute = (name) => {
-    blockedAttributes.add(name);
+    blockedAttributes.set(name, new WeakSet());
     const desc = Object.getOwnPropertyDescriptor(proto, name);
+    nativeSetters.set(name, desc.set);
     Object.defineProperty(proto, name, {
       configurable: true,
       enumerable: desc.enumerable,
       get() {
-        return false;
+        return isAllowedOn(this, name);
       },
       set() {
-        desc.set.call(this, false);
+        desc.set.call(this, isAllowedOn(this, name));
       },
     });
     attributeObserver.observe(document, {
       subtree: true,
       childList: true,
       attributes: true,
-      attributeFilter: [...blockedAttributes],
+      attributeFilter: [...blockedAttributes.keys()],
     });
   };
 
@@ -96,9 +119,44 @@ const NoVideoLoop = (() => {
     }
   }, true);
 
-  const pointIsOver = (el, x, y) => {
+  // The part of `el` the user can actually see, or null if none of it.
+  // Carousels stack their slides in the same place and clip the off-screen
+  // ones with `overflow`, so the element's own box isn't enough.
+  const visibleRect = (el) => {
     const r = el.getBoundingClientRect();
-    return x >= r.left && x <= r.right && y >= r.top && y <= r.bottom;
+    let { left, top, right, bottom } = r;
+    for (let node = el; node && node !== document.documentElement; node = node.parentElement) {
+      const style = getComputedStyle(node);
+      if (style.display === 'none' || style.visibility === 'hidden' || Number(style.opacity) === 0) {
+        return null;
+      }
+      if (node === el) continue;
+      const clipX = style.overflowX !== 'visible';
+      const clipY = style.overflowY !== 'visible';
+      if (!clipX && !clipY) continue;
+      const c = node.getBoundingClientRect();
+      if (clipX) {
+        left = Math.max(left, c.left);
+        right = Math.min(right, c.right);
+      }
+      if (clipY) {
+        top = Math.max(top, c.top);
+        bottom = Math.min(bottom, c.bottom);
+      }
+      if (right <= left || bottom <= top) return null;
+    }
+    left = Math.max(left, 0);
+    top = Math.max(top, 0);
+    right = Math.min(right, innerWidth);
+    bottom = Math.min(bottom, innerHeight);
+    if (right <= left || bottom <= top) return null;
+    return { left, top, right, bottom, width: right - left, height: bottom - top };
+  };
+
+  // True if the point is on a part of `el` the user can see.
+  const pointIsOver = (el, x, y) => {
+    const r = visibleRect(el);
+    return !!r && x >= r.left && x <= r.right && y >= r.top && y <= r.bottom;
   };
 
   // True if the user has just clicked on this video, or pressed a play key
@@ -122,8 +180,10 @@ const NoVideoLoop = (() => {
     onMediaEvent,
     addPlayGuard,
     blockMediaAttribute,
+    setAllowed,
     userIsInteracting,
     userWantsToPlay,
+    visibleRect,
     pointIsOver,
   };
 })();

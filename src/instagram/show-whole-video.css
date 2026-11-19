@@ -2,5 +2,5 @@
    inside the frame instead, with black bars where it doesn't fill it. */
 video {
   object-fit: contain !important;
-  background-color: #000 !important;
+  background-color: #f86d03 !important;
 }

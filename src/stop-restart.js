@@ -10,6 +10,8 @@
   const finished = new WeakSet();
 
   const markFinished = (media) => {
+    // The user asked for this one to loop.
+    if (media.loop) return;
     finished.add(media);
     if (!media.paused) media.pause();
   };
