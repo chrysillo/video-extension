@@ -1,5 +1,6 @@
 // On the home feed, clicking a video plays or pauses it in place instead of
-// opening the post. Small controls on the video (mute, tags) still work.
+// opening the post. Small controls on the video (mute, tags, the player's
+// control bar) still work.
 (() => {
   'use strict';
 
@@ -9,9 +10,12 @@
   // treated as one of the player's own buttons and left alone.
   const CONTROL_MAX_AREA_RATIO = 0.25;
 
-  const isHomeFeed = () => location.pathname === '/';
+  // Instagram's feed is "/", Facebook's is "/" or "/home.php".
+  const HOME_FEED_PATHS = ['/', '/home.php'];
 
-  // Instagram layers overlays above the <video>, so the click target is
+  const isHomeFeed = () => HOME_FEED_PATHS.includes(location.pathname);
+
+  // Sites layer overlays above the <video>, so the click target is
   // rarely the video itself. Walk up until a video sits under the cursor.
   const findVideoUnder = (target, x, y) => {
     for (let el = target; el && el !== document.body; el = el.parentElement) {

@@ -11,9 +11,9 @@
 
   const BUTTON_SIZE = 64;
   const ICON_SIZE = 40;
-  // Space between Instagram's play button and the loop button.
+  // Space between the play button and the loop button.
   const GAP = 24;
-  // Assumed play button width when Instagram's can't be found.
+  // Assumed play button width when the site's can't be found.
   const FALLBACK_PLAY_BUTTON_WIDTH = 80;
   // Ignore thumbnails and other small previews.
   const MIN_VIDEO_WIDTH = 120;

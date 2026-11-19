@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "No Video Loop",
-  "version": "1.14.0",
-  "description": "Stops Facebook, Instagram and YouTube videos from looping. Stops the Facebook feed auto-refreshing. On Instagram, also disables autoplay, plays feed videos in place and keeps them playing in background tabs.",
+  "version": "1.16.0",
+  "description": "Stops Facebook, Instagram and YouTube videos from looping. Stops the Facebook feed auto-refreshing. Stops double-clicks liking Instagram posts. On Facebook and Instagram, also disables autoplay, plays feed videos in place and keeps them playing in background tabs.",
   "background": {
     "service_worker": "src/background/keep-tabs-loaded.js"
   },
@@ -21,7 +21,9 @@
         "src/stop-restart.js",
         "src/stop-near-end.js",
         "src/always-visible.js",
-        "src/always-focused.js"
+        "src/always-focused.js",
+        "src/no-autoplay.js",
+        "src/inline-playback.js"
       ],
       "run_at": "document_start",
       "all_frames": true,
@@ -42,14 +44,15 @@
         "src/always-visible.js",
         "src/always-focused.js",
         "src/user-loop.js",
-        "src/instagram/no-autoplay.js",
+        "src/no-autoplay.js",
         "src/ui/overlay-button.js",
         "src/ui/geometry.js",
         "src/ui/watch-videos.js",
         "src/instagram/play-button.js",
-        "src/instagram/loop-button.js",
-        "src/instagram/inline-playback.js",
-        "src/instagram/no-likes-list.js"
+        "src/ui/loop-button.js",
+        "src/inline-playback.js",
+        "src/instagram/no-likes-list.js",
+        "src/instagram/no-double-click-like.js"
       ],
       "run_at": "document_start",
       "all_frames": true,
