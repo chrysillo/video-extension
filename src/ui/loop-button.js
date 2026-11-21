@@ -5,7 +5,7 @@
   'use strict';
 
   const {
-    createOverlayButton, watchVideos, centreOf, visibleShare, isCoveredAt,
+    createOverlayButton, watchVideos, centreOf, visibleShare, isBoxCovered,
     playButtonWidth, isUserLooping, startUserLoop,
   } = NoVideoLoop;
 
@@ -73,7 +73,7 @@
     overlay.playButtonWidth = playButtonWidth(video) || overlay.playButtonWidth;
 
     const { left, top } = positionFor(video.getBoundingClientRect(), overlay.playButtonWidth);
-    if (isCoveredAt(video, left + BUTTON_SIZE / 2, top + BUTTON_SIZE / 2)) {
+    if (isBoxCovered(video, left, top, BUTTON_SIZE)) {
       overlay.button.hide();
     } else {
       overlay.button.showAt(left, top);

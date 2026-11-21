@@ -175,10 +175,17 @@ const NoVideoLoop = (() => {
     return !!r && x >= r.left && x <= r.right && y >= r.top && y <= r.bottom;
   };
 
+  // Media one of our own buttons has just been asked to play, with the time.
+  const requestedPlays = new WeakMap();
+  const requestPlay = (media) => {
+    requestedPlays.set(media, performance.now());
+  };
+
   // True if the user has just clicked on this video, or pressed a play key
-  // while focused on it or its player.
+  // while focused on it or its player, or used one of our buttons on it.
   const userWantsToPlay = (media) => {
     const now = performance.now();
+    if (now - (requestedPlays.get(media) ?? -Infinity) < INTENT_WINDOW_MS) return true;
     if (lastPointer && now - lastPointer.time < INTENT_WINDOW_MS &&
         pointIsOver(media, lastPointer.x, lastPointer.y)) {
       return true;
@@ -200,6 +207,7 @@ const NoVideoLoop = (() => {
     setAllowed,
     userIsInteracting,
     userWantsToPlay,
+    requestPlay,
     visibleRect,
     pointIsOver,
   };
