@@ -43,7 +43,10 @@ const NoVideoLoop = (() => {
   const origSetAttribute = Element.prototype.setAttribute;
   Element.prototype.setAttribute = function (name, value) {
     const lower = String(name).toLowerCase();
-    if (isMedia(this) && blockedAttributes.has(lower) && !isAllowedOn(this, lower)) return;
+    if (isMedia(this) && blockedAttributes.has(lower) && !isAllowedOn(this, lower)) {
+      if (!userToggleable.has(lower) || !userIsInteracting()) return;
+      blockedAttributes.get(lower).add(this);
+    }
     return origSetAttribute.call(this, name, value);
   };
 
@@ -77,10 +80,19 @@ const NoVideoLoop = (() => {
     syncAttributes(media);
   };
 
+  // Blocked attributes the page may switch on straight after a click or key
+  // press, for players whose own menu lets the user choose (YouTube's loop).
+  // The page can always switch these off.
+  const userToggleable = new Set();
+  const allowUserToggle = (name) => {
+    userToggleable.add(name);
+  };
+
   // Stop the page setting `name`: the property and attribute stay off
   // unless the user has switched them on for that element.
   const blockMediaAttribute = (name) => {
-    blockedAttributes.set(name, new WeakSet());
+    const allowed = new WeakSet();
+    blockedAttributes.set(name, allowed);
     const desc = Object.getOwnPropertyDescriptor(proto, name);
     nativeSetters.set(name, desc.set);
     Object.defineProperty(proto, name, {
@@ -89,7 +101,11 @@ const NoVideoLoop = (() => {
       get() {
         return isAllowedOn(this, name);
       },
-      set() {
+      set(value) {
+        if (userToggleable.has(name)) {
+          if (!value) allowed.delete(this);
+          else if (userIsInteracting()) allowed.add(this);
+        }
         desc.set.call(this, isAllowedOn(this, name));
       },
     });
@@ -180,6 +196,7 @@ const NoVideoLoop = (() => {
     onMediaEvent,
     addPlayGuard,
     blockMediaAttribute,
+    allowUserToggle,
     setAllowed,
     userIsInteracting,
     userWantsToPlay,
