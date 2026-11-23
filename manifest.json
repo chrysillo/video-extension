@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "No Video Loop",
-  "version": "1.17.1",
-  "description": "Stops Facebook, Instagram and YouTube videos from looping. Stops the Facebook feed auto-refreshing. Stops double-clicks liking Instagram posts. On Facebook and Instagram, also disables autoplay, plays feed videos in place and keeps them playing in background tabs.",
+  "version": "1.18.0",
+  "description": "Stops Facebook, Instagram, YouTube and X (Twitter) videos from looping. Stops the Facebook feed auto-refreshing. Stops double-clicks liking Instagram posts. On Facebook and Instagram, also disables autoplay, plays feed videos in place and keeps them playing in background tabs.",
   "background": {
     "service_worker": "src/background/keep-tabs-loaded.js"
   },
@@ -71,6 +71,21 @@
         "src/block-loop.js",
         "src/youtube/allow-user-loop.js",
         "src/stop-restart.js"
+      ],
+      "run_at": "document_start",
+      "all_frames": true,
+      "world": "MAIN"
+    },
+    {
+      "matches": [
+        "*://*.twitter.com/*",
+        "*://*.x.com/*"
+      ],
+      "js": [
+        "src/core.js",
+        "src/block-loop.js",
+        "src/stop-restart.js",
+        "src/stop-near-end.js"
       ],
       "run_at": "document_start",
       "all_frames": true,
