@@ -1,0 +1,36 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <header>
+    <div class="badge" aria-hidden="true">
+      <svg viewBox="0 0 24 24"><path d="M8 5.5v13l10.5-6.5z"/></svg>
+    </div>
+    <div>
+      <h1>No Video Loop</h1>
+      <span id="version" class="version"></span>
+    </div>
+  </header>
+
+  <p class="description">
+    Videos stop when they end, play only when you click them, and keep playing in the background on Facebook, Instagram, YouTube and X.
+  </p>
+
+  <section class="options">
+    <div class="option">
+      <div class="option-text">
+        <span class="option-title">Reload extension</span>
+        <span id="option-hint" class="option-hint">Load the latest code from disk</span>
+      </div>
+      <button id="reload" type="button" title="Reload extension" aria-label="Reload extension">
+        <svg viewBox="0 0 24 24"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/></svg>
+      </button>
+    </div>
+  </section>
+
+  <script src="popup.js"></script>
+</body>
+</html>

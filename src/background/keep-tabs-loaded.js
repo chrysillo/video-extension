@@ -25,3 +25,9 @@ chrome.runtime.onStartup.addListener(keepAllLoaded);
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   if (changeInfo.url || changeInfo.status === 'complete') keepLoaded(tab);
 });
+
+// The popup's reload button. Reloading picks up new code from disk; pages
+// already open keep the old scripts until they're refreshed.
+chrome.runtime.onMessage.addListener((message) => {
+  if (message?.type === 'reload-extension') chrome.runtime.reload();
+});
