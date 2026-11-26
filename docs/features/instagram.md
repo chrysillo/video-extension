@@ -14,7 +14,7 @@ These work the same way as on [Facebook](facebook.md):
 
 ## Loop button
 
-- A round loop button (64 px, "Play on loop") appears on each paused video, just right of Instagram's play button and kept inside the video.
+- A round loop button (64 px, "Play on loop") appears on each paused video, just left of Instagram's play button and kept inside the video.
 - Clicking it plays that one video on loop. A video that was at or near its end (within 0.5 s) starts from the beginning.
 - The button hides while the video plays, and doesn't come back while it's looping.
 - Looping stops when:
@@ -53,7 +53,7 @@ These work the same way as on [Facebook](facebook.md):
 
 ## No profile card on account names
 
-- Only on the home feed (`/`).
+- On every Instagram page: feed, posts, Reels, Explore, profiles and comments.
 - Hovering over an account name doesn't pop up the profile preview card, and doesn't show a tooltip.
 - Clicking the name still opens the profile.
 - Links that aren't to an account, such as posts, Reels, Explore and messages, are left alone.

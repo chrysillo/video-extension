@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "No Video Loop",
-  "version": "1.20.2",
+  "version": "1.20.4",
   "description": "Stops Facebook, Instagram, YouTube and X (Twitter) videos from looping. Stops the Facebook feed auto-refreshing. Stops double-clicks liking Instagram posts. On Facebook and Instagram, also disables autoplay, plays feed videos in place and keeps them playing in background tabs.",
   "action": {
     "default_title": "No Video Loop",

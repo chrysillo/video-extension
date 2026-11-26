@@ -1,4 +1,4 @@
-// A loop button beside the play button of each paused video. Clicking it
+// A loop button to the left of the play button of each paused video. Clicking it
 // starts the video on loop. The button hides while the video plays and
 // comes back when it's paused, unless it's looping.
 (() => {
@@ -54,11 +54,11 @@
     video.getBoundingClientRect().width >= MIN_VIDEO_WIDTH &&
     visibleShare(video) >= MIN_VISIBLE_SHARE;
 
-  // Just right of the play button, kept inside the video.
+  // Just left of the play button, kept inside the video.
   const positionFor = (rect, playWidth) => {
     const centre = centreOf(rect);
     return {
-      left: Math.min(centre.x + playWidth / 2 + GAP, rect.right - BUTTON_SIZE - GAP),
+      left: Math.max(centre.x - playWidth / 2 - GAP - BUTTON_SIZE, rect.left + GAP),
       top: centre.y - BUTTON_SIZE / 2,
     };
   };

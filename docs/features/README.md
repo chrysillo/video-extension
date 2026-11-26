@@ -25,4 +25,4 @@ Each file lists everything the extension is supposed to do on one site.
 | Whole video shown, not cropped | | ✓ | | |
 | Double-click doesn't like a post | | ✓ | | |
 | Like count can't be clicked | | ✓ | | |
-| No profile card on hover in the feed | | ✓ | | |
+| No profile card on hovering account names | | ✓ | | |

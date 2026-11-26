@@ -1,4 +1,4 @@
-// On the home feed, hovering over an account name no longer pops up the
+// Hovering over an account name anywhere on Instagram no longer pops up the
 // profile preview card.
 (() => {
   'use strict';
@@ -29,7 +29,6 @@
 
   for (const type of ['mouseover', 'pointerover', 'mouseenter', 'pointerenter']) {
     window.addEventListener(type, (e) => {
-      if (location.pathname !== '/') return;
       const link = profileLinkOf(e.target);
       if (link) stop(e, link);
     }, true);
@@ -37,7 +36,6 @@
 
   for (const type of ['mouseout', 'pointerout']) {
     window.addEventListener(type, (e) => {
-      if (location.pathname !== '/') return;
       const link = profileLinkOf(e.relatedTarget);
       // Moving around inside the same link is fine to let through.
       if (link && !link.contains(e.target)) stop(e, link);
