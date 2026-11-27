@@ -22,12 +22,37 @@
   // React works out "mouse entered X" mostly from the "out" event of the
   // element the mouse left, whose relatedTarget is X, so those have to be
   // stopped too, not just the "over" and "enter" events on the link.
-  const stop = (e, link) => {
+  // The browser's own name tooltip comes from a title on the link or on any
+  // element inside it, so those all have to go.
+  const stripTitles = (link) => {
     link.removeAttribute('title');
+    for (const el of link.querySelectorAll('[title]')) el.removeAttribute('title');
+  };
+
+  const stop = (e, link) => {
+    stripTitles(link);
     e.stopImmediatePropagation();
   };
 
-  for (const type of ['mouseover', 'pointerover', 'mouseenter', 'pointerenter']) {
+  // Strip titles as soon as profile links appear, so no tooltip is ever
+  // armed before the first hover event arrives.
+  const sweep = (root) => {
+    if (!(root instanceof Element)) return;
+    const link = isProfileLink(root);
+    if (link) stripTitles(link);
+    for (const a of root.querySelectorAll('a[href]')) {
+      if (isProfileLink(a) === a) stripTitles(a);
+    }
+  };
+
+  new MutationObserver((records) => {
+    for (const r of records) {
+      if (r.type === 'attributes') sweep(r.target);
+      else for (const n of r.addedNodes) sweep(n);
+    }
+  }).observe(document, { subtree: true, childList: true, attributes: true, attributeFilter: ['title'] });
+
+  for (const type of ['mouseover', 'pointerover', 'mouseenter', 'pointerenter', 'mousemove', 'pointermove']) {
     window.addEventListener(type, (e) => {
       const link = profileLinkOf(e.target);
       if (link) stop(e, link);
